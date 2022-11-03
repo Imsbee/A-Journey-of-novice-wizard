@@ -1,7 +1,8 @@
 ﻿  A_novice_wizard's_journey.cpp
-C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(316,74): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(316,33): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(327,57): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(157,6): warning C4101: 'hdc' :참조되지 않은 지역 변수입니다.
-C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(271,8): warning C4101: 'rect' :참조되지 않은 지역 변수입니다.
-  A_novice_wizard's_journey.vcxproj -> C:\Users\dladu\Desktop\A_Novice_Wizzard's_Journey\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\x64\Debug\A_novice_wizard's_journey.exe
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(177,17): warning C4244: '+=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(328,89): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(328,41): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(329,49): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(343,86): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\A_novice_wizard's_journey\A_novice_wizard's_journey.cpp(283,8): warning C4101: 'rect' :참조되지 않은 지역 변수입니다.
+  A_novice_wizard's_journey.vcxproj -> C:\Users\YUHAN\Desktop\갈매기\A-Journey-of-novice-wizard\A-Journey-of-novice-wizard\x64\Debug\A_novice_wizard's_journey.exe

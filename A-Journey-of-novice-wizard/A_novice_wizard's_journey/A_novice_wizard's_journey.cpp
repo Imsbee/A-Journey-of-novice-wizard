@@ -11,14 +11,19 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 HDC memdc;      // 메모리 DC 값
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
-POINT user = { 230, 260 };
-POINT monster_pos = { 1000, 130  };
+POINT user_pos = { 150, 380 };
+POINT monster_pos = { 1050, 280 };
+POINT monsterAttack_pos = { monster_pos.x - 50, monster_pos.y + 100 };
 POINT userAttack = { -10000, -10000 };
+RECT user = { user_pos.x, user_pos.y, user_pos.x + 70, user_pos.y + 100 };
 RECT monster = { monster_pos.x, monster_pos.y, monster_pos.x + 200, monster_pos.y + 320 };
 BOOL is_jump = false;
+BOOL KeyBuffer[256];
 
+int user_hp = 400;
+int user_mp = 300;
 int hp_monster = 100;
-int user_jump = user.y;
+int user_jump = user_pos.y;
 float jumpTime = 0.f;
 float jumpHeight = 0;
 float jumpPower = 50.f;
@@ -131,8 +136,8 @@ void jump()
 {
 	if (!is_jump) return;
 
-	jumpHeight = (jumpTime * jumpTime - jumpPower * jumpTime) / 7.f;
-	jumpTime += 2.f;
+	jumpHeight = (jumpTime * jumpTime - jumpPower * jumpTime) / 2.f;
+	jumpTime += 4.f;
 
 	if (jumpTime > jumpPower)
 	{
@@ -142,6 +147,37 @@ void jump()
 	}
 }
 
+DWORD WINAPI loop(LPVOID lpvoid)
+{
+	HWND hWnd = (HWND)lpvoid;
+
+	if (KeyBuffer[VK_LEFT])
+	{
+		user_pos.x -= 10;
+		user = { user_pos.x, user_pos.y, user_pos.x + 70, user_pos.y + 100 };
+		InvalidateRect(hWnd, NULL, TRUE);
+	}
+	if (KeyBuffer[VK_RIGHT])
+	{
+		user_pos.x += 10;
+		user = { user_pos.x, user_pos.y, user_pos.x + 70, user_pos.y + 100 };
+		InvalidateRect(hWnd, NULL, TRUE);
+	}
+	if (KeyBuffer[88] || KeyBuffer[120])	// x키 입력시 처리
+	{
+		userAttack.x = user_pos.x + 100;
+		userAttack.y = user_pos.y + 30;
+		SetTimer(hWnd, 0, 100, NULL);
+		InvalidateRect(hWnd, NULL, TRUE);
+	}
+	if (KeyBuffer[67] || KeyBuffer[99])    // c키 입력시 처리
+	{
+		is_jump = TRUE;
+		SetTimer(hWnd, 1, 50, NULL);
+		user_pos.y += jumpHeight;
+	}
+	return 0;
+}
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -154,9 +190,6 @@ void jump()
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	HDC hdc;
-	RECT rect;
-
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -178,73 +211,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_CREATE:
 	{
-		SetTimer(hWnd, 10, 10, NULL);
-
+		SetTimer(hWnd, 10, 100, NULL);
 	}
 	break;
 	// 방향키 입력 처리
 	case WM_KEYDOWN:
 	{
-		switch (wParam)
-		{
-			// 왼쪽 키를 눌렀을 시 캐릭터를 왼쪽 방향으로 15px씩 이동.
-		case VK_LEFT:
-		{
-			user.x -= 10;
-
-			InvalidateRect(hWnd, NULL, TRUE);
-		}
-		break;
-		// 오른쪽 키를 눌렀을 시 캐릭터를 왼쪽 방향으로 15px씩 이동.
-		case VK_RIGHT:
-		{
-			user.x += 10;
-
-			InvalidateRect(hWnd, NULL, TRUE);
-		}
-		break;
-		}
+		KeyBuffer[wParam] = TRUE;
+		CreateThread(NULL, NULL, loop, hWnd, NULL, NULL);
 	}
 	break;
-	// 행동키 입력 처리
-	case WM_CHAR:
+	case WM_KEYUP:
 	{
-		if (wParam == 88 || wParam == 120)	// x  키 입력 시 처리
-		{
-			userAttack.x = user.x + 170;
-			userAttack.y = user.y + 70;
-			SetTimer(hWnd, 0, 100, NULL);
-			InvalidateRect(hWnd, NULL, TRUE);
-		}
-		else if (wParam == 67 || wParam == 99)		// c 키 입력 시 처리
-		{
-			is_jump = TRUE;
-			SetTimer(hWnd, 1, 50, NULL);
-		}
-		else if (wParam == 81 || wParam == 113)		// q 키 입력 시 처리
-		{
-
-		}
-		else if (wParam == 87 || wParam == 119)		// w 키 입력 시 처리
-		{
-
-		}
+		KeyBuffer[wParam] = FALSE;
 	}
 	break;
 	case WM_TIMER:
 	{
 		if (wParam == 0)
 		{
+			RECT rect;
 			RECT rect_userAttack = { userAttack.x, userAttack.y, userAttack.x + 50, userAttack.y + 50 };
 			if (IntersectRect(&rect, &monster, &rect_userAttack))
 			{
 				hp_monster -= 1;
+				userAttack = { -10000, -10000 };
 			}
 			else
 			{
 				userAttack.x += 30;
 			}
-	
+
 			InvalidateRect(hWnd, NULL, TRUE);
 		}
 		if (wParam == 1)
@@ -258,9 +255,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		if (wParam == 10)
 		{
-			
+			RECT rect;
+			RECT monsterAttack = { monsterAttack_pos.x, monsterAttack_pos.y, monsterAttack_pos.x + 30, monsterAttack_pos.y + 30 };
+			if (IntersectRect(&rect, &user, &monsterAttack))
+			{
+				user_hp -= 10;
+				monsterAttack_pos = { monster_pos.x - 50, monster_pos.y + 100 };
+			}
+			else if (monsterAttack_pos.x < 0)
+			{
+				monsterAttack_pos = { monster_pos.x - 50, monster_pos.y + 100 };
+			}
+			else
+			{
+				monsterAttack_pos.x -= 50;
+				InvalidateRect(hWnd, NULL, TRUE);
+			}
 		}
-		
+
 	}
 	break;
 	case WM_PAINT:
@@ -275,17 +287,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
 
 		// HP 바
-		RECT hp = { 35, 0, 400, 30 };
+		RECT hp = { 35, 0, user_hp, 30 };
 		TextOut(hdc, 5, 5, L"HP : ", 4);
 		brush = CreateSolidBrush(RGB(255, 0, 0));
-		Rectangle(hdc, 35, 0, 400, 30);
+		Rectangle(hdc, hp.left, hp.top, hp.right, hp.bottom);
 		FillRect(hdc, &hp, brush);
 
 		//  MP 바
-		RECT mp = { 35, 45, 300, 75 };
+		RECT mp = { 35, 45, user_mp, 75 };
 		TextOut(hdc, 5, 50, L"MP : ", 4);
 		brush = CreateSolidBrush(RGB(0, 0, 255));
-		Rectangle(hdc, 35, 45, 300, 75);
+		Rectangle(hdc, mp.left, mp.top, mp.right, mp.bottom);
 		FillRect(hdc, &mp, brush);
 
 		// 하단바
@@ -313,18 +325,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		TextOut(hdc, 5, 640, L"exp", 3);
 
 		// 유저
-		Rectangle(hdc, user.x, user.y + jumpHeight, user.x + 150, user.y + 200 + jumpHeight);
-		TextOut(hdc, user.x + 60, user.y + 95, L"유저", 2);
+		Rectangle(hdc, user_pos.x, user_pos.y + jumpHeight, user_pos.x + 70, user_pos.y + 100 + jumpHeight);
+		TextOut(hdc, user_pos.x + 20, user_pos.y + 45 + jumpHeight, L"유저", 2);
 
 		// 유저 공격
-		Rectangle(hdc, userAttack.x, userAttack.y, userAttack.x + 50, userAttack.y + 50);
+		Rectangle(hdc, userAttack.x, userAttack.y, userAttack.x + 30, userAttack.y + 30);
+		TextOut(hdc, userAttack.x, userAttack.y + 7, L"공격", 2);
 
 		// 몬스터
-		Rectangle(hdc, monster_pos.x, monster_pos.y, monster_pos.x + 200, monster_pos.y + 320);
-		TextOut(hdc, 1075, 270, L"몬스터", 3);
+		Rectangle(hdc, monster_pos.x, monster_pos.y, monster_pos.x + 130, monster_pos.y + 200);
+		TextOut(hdc, monster_pos.x + 40, monster_pos.y + 85, L"몬스터", 3);
 
+		// 몬스터 공격
+		Rectangle(hdc, monsterAttack_pos.x, monsterAttack_pos.y, monsterAttack_pos.x + 30, monsterAttack_pos.y + 30);
+			
 		// 몬스터 체력바
-		TextOut(hdc, 1090, 100, monster_hp, wcslen(monster_hp));
+		TextOut(hdc, monster_pos.x + 50, monster_pos.y - 20, monster_hp, wcslen(monster_hp));
 
 		EndPaint(hWnd, &ps);
 	}
